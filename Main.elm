@@ -18,6 +18,7 @@ scale intervals root = List.scanl (+) root intervals
 
 update m set = (if m.noteOn then Set.insert else Set.remove) m.pitch set
 pitchSet = foldp update Set.empty midiNoteS
-pitchSetToScale set = (set |> Set.toList |> List.sort |> List.head) `andThen` (\root -> Just (scale majorScale root))
+lowestNote set = set |> Set.toList |> List.sort |> List.head
+pitchSetToScale set = lowestNote set `andThen` (\root -> Just (scale majorScale root))
 main =
   Signal.map pitchSetToScale pitchSet |> Signal.map show
