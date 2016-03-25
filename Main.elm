@@ -1,11 +1,13 @@
 import WebMidi exposing (..)
-import Graphics.Element exposing (Element, show)
+import Graphics.Element exposing (..)
 import Signal exposing (..)
 import Task exposing (Task)
 import List
 import Set
 import Maybe exposing (..)
 import Array
+import String
+import Html exposing (..)
 
 -- Patch current deficiencies in the Elm core Set library
 setsAreEqual a b = (a |> Set.toList |> List.sort) == (b |> Set.toList |> List.sort)
@@ -43,8 +45,9 @@ scalesWithPitches pitches = pitches |> pitchClassSet |> scalesWithPitchClasses
 lowestNote set = set |> Set.toList |> List.sort |> List.head
 pitchSetToScale set = lowestNote set `andThen` (\root -> Just (scale majorIntervals root |> List.map pitchClass))
 
+stringsToUl strings = strings |> List.map (\x -> li [] [text x]) |> ul []
+
 update m set = (if m.noteOn then Set.insert else Set.remove) m.pitch set
 depressedPitchSet = foldp update Set.empty midiNoteS
 main = depressedPitchSet |> Signal.map pitchClassSet
-     |> Signal.map scalesWithPitchClasses |> Signal.map (\xs -> (List.map .name xs))
-     |> Signal.map show
+     |> Signal.map scalesWithPitchClasses |> Signal.map (\xs -> xs |> List.map .name |> stringsToUl)
