@@ -26,6 +26,8 @@ pitchClassSet pitches = Set.map pitchClass pitches
 noteNames = Array.fromList ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 noteName pitch = Array.get (pitchClass pitch) noteNames |> withDefault "C"
 
+majorTriad = [4, 3]
+minorTriad = [3, 4]
 majorIntervals = [2, 2, 1, 2, 2, 2]
 naturalMinorIntervals = [2, 1, 2, 2, 1, 2]
 
@@ -36,8 +38,8 @@ buildScale name intervals rootPitchClass =
   }
 
 allScalesLike name intervals = List.map (buildScale name intervals) allPitchClasses
-allMajorScales = allScalesLike "major" majorIntervals
-allMinorScales = allScalesLike "minor" naturalMinorIntervals
+allMajorScales = allScalesLike "major" majorTriad --majorIntervals
+allMinorScales = allScalesLike "minor" minorTriad --naturalMinorIntervals
 allScales = allMajorScales ++ allMinorScales
 scalesWithPitchClasses set = if Set.isEmpty set then [] else List.filter (\scale -> isSubset scale.pitchClassSet set) allScales
 scalesWithPitches pitches = pitches |> pitchClassSet |> scalesWithPitchClasses
