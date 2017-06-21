@@ -1,7 +1,7 @@
 {
     "version": "1.1.0",
     "summary": "Web MIDI chord finder",
-    "repository": "https://github.com/lassik/webmidi-chord-finder.git",
+    "repository": "https://github.com/lassik/web-midi-chord-finder.git",
     "license": "BSD3",
     "source-directories": [
         "src"
