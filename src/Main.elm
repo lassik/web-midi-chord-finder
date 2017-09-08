@@ -5,6 +5,7 @@ import CoMidi
 import Html
 import List
 import MidiTypes
+import Piano
 import Set
 import WebMidi
 
@@ -15,6 +16,7 @@ type alias Model =
 
 type Msg
     = MidiMessage WebMidi.Message
+    | PianoEvent Piano.Msg
 
 
 
@@ -158,23 +160,39 @@ updatePitchSet midiEvent set =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update (MidiMessage message) model =
-    let
-        midiEvent =
-            message.midiEvent |> CoMidi.parseMidiEvent
-    in
-    ( { model | depressedPitchSet = updatePitchSet midiEvent model.depressedPitchSet }
-    , Cmd.none
-    )
+update message model =
+    case message of
+        MidiMessage msg ->
+            let
+                midiEvent =
+                    msg.midiEvent |> CoMidi.parseMidiEvent
+            in
+            ( { model | depressedPitchSet = updatePitchSet midiEvent model.depressedPitchSet }
+            , Cmd.none
+            )
+
+        PianoEvent _ ->
+            ( model, Cmd.none )
 
 
 view : Model -> Html.Html Msg
 view model =
-    model.depressedPitchSet
-        |> pitchClassSet
-        |> scalesWithPitchClasses
-        |> List.map .name
-        |> stringsToUl
+    Html.div []
+        [ Html.map PianoEvent
+            (Piano.view
+                { notes = model.depressedPitchSet
+                , noteRange = Piano.keyboard49Keys
+                , interactive = False
+                , showSizeSelector = False
+                , debugNotes = False
+                }
+            )
+        , model.depressedPitchSet
+            |> pitchClassSet
+            |> scalesWithPitchClasses
+            |> List.map .name
+            |> stringsToUl
+        ]
 
 
 main : Program Never Model Msg
